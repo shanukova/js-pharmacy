@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const DB = './db';
+const FORMULARY = './formulary';
 
 const readFormulary = () => {
   try {
-    const data = fs.readFileSync(DB, 'utf8');
+    const data = fs.readFileSync(FORMULARY, 'utf8');
     dataToSet = new Set(data.split('\n').filter(el => el.length > 0));
     return dataToSet;
   } catch (err) {
@@ -15,7 +15,7 @@ const readFormulary = () => {
 
 const writeFormulary = meds => {
   meds = [...meds].sort().join('\n');
-  fs.writeFile(DB, meds, (err) => {
+  fs.writeFile(FORMULARY, meds, (err) => {
     if (err) throw err;
   });
 };
