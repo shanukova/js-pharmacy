@@ -3,7 +3,7 @@
 const fs = require('fs');
 const DB = './db';
 
-const readDB = () => {
+const readFormulary = () => {
   try {
     const data = fs.readFileSync(DB, 'utf8');
     dataToSet = new Set(data.split('\n').filter(el => el.length > 0));
@@ -13,7 +13,7 @@ const readDB = () => {
   };
 };
 
-const writeDB = meds => {
+const writeFormulary = meds => {
   meds = [...meds].sort().join('\n');
   fs.writeFile(DB, meds, (err) => {
     if (err) throw err;
@@ -25,31 +25,35 @@ const tasks = () => {
     if (process.argv[3] === undefined) {
       console.log('Command needed after \'formulary\'');
     } else if (process.argv[3] === 'list') {
-      return list();
+      return listFormulary();
     } else if (process.argv[3] === 'add') {
-      return add(process.argv[4]);
+      return addFormulary(process.argv[4]);
     } else {
       console.log('Unknown command!');
     };
+
+  } else if ((process.argv[2] === 'stock')) {
+    if (process.argv[3] === undefined) {
+      console.log('Command needed after \'stock\'');
+    }
+
   } else {
     console.log('Unknown command!');
   }
 };
 
-const list = () => {
-  const meds = readDB();
-  meds.forEach(med => {
-    console.log(med);
-  });
+const listFormulary = () => {
+  const meds = readFormulary();
+  meds.forEach(med => console.log(med));
 };
 
-const add = med => {
-  const meds = readDB();
+const addFormulary = med => {
+  const meds = readFormulary();
   if ([...meds].includes(med)) {
     console.log('This medicine is already in the database!');
   } else {
-    writeDB(meds.add(med));
-    list();
+    writeFormulary(meds.add(med));
+    listFormulary();
   };
 };
 
