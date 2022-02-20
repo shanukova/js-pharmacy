@@ -36,7 +36,6 @@ const writeStock = meds => {
     };
   };
   let jsonContent = JSON.stringify(meds);
-  console.log('This is jsonContent:', jsonContent)
   fs.writeFile(STOCK, jsonContent, 'utf8', (err) => { if (err) throw err });
 };
 
@@ -58,7 +57,6 @@ const tasks = () => {
         return addToFormulary(med);
       }
     } else { console.log('Unknown command!') };
-
   // For the 'stock' case:
   } else if ((process.argv[2] === 'stock')) {
     if (process.argv[3] === undefined) {
@@ -75,7 +73,6 @@ const tasks = () => {
         return addToStock(med);
       }
     } else { console.log('Unknown command!') };
-
   // Else case: neither 'form' or 'stock':
   } else { console.log('Unknown command!') };
 };
@@ -99,7 +96,8 @@ const listStock = () => {
   let meds = readStock();
   for (let medName in meds) {
     let med = meds[medName];
-    console.log(medName, `${med.strength}mg`, med.packSize, med.totalPacks)
+    let padding = med.totalPacks < 10 ? '  ' : med.totalPacks < 100 ? ' ' : '';
+    console.log(`${med.totalPacks}${padding} x ${medName}, ${med.packSize}x${med.strength}mg`);
   }
 };
 
@@ -131,31 +129,3 @@ const addToStock = med => {
 };
 
 tasks();
-
-// 7 × Codeine,           60×2mg
-// 22 × Codeinegfjkslgjfk, 60×2mg
-//  7 × Codeine, 60×2mg
-
-// {
-//   "A": [
-//     "5×20mg": 8,
-//     "10×10mg": 4
-//   ],
-//   "B": [
-//     "22×1mg": 5
-//     ],
-//   "C": [],
-//   "Manulya": []
-// }
-
-
-// "A": [
-//     {packSize: 5, strength: 20, count: 8},
-//     {packSize: 10, strength: 10, count: 4},
-//   ],
-
-// padding = c < 10 ? '  ' : c < 100 ? ' ' : ''
-
-// USAGE: meds form add <name>
-
-// checkUserInput => promptForNumber ✅
