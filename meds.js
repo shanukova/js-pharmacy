@@ -20,8 +20,6 @@ const writeFormulary = meds => {
 const readStock = () => {
   try {
     let jsonString = fs.readFileSync(STOCK);
-    console.log('This is to check whether jsonString is implemented...');
-    console.log(jsonString);
     return JSON.parse(jsonString);
   } catch(err) { console.log(err) };
 };
@@ -34,7 +32,7 @@ const writeStock = meds => {
       Object.defineProperty(
         meds, upperCasedMedName,
         Object.getOwnPropertyDescriptor(meds, medName));
-        delete meds[medName];
+      delete meds[medName];
     };
   };
   let jsonContent = JSON.stringify(meds);
@@ -55,12 +53,11 @@ const tasks = () => {
       if (process.argv[4] === undefined) {
         console.log('Specify an item to be added!');
       } else {
-        let med = process.argv[4][0].toUpperCase() + process.argv[4].slice(1);
+        let med = process.argv[4][0].toUpperCase()
+                  + process.argv[4].slice(1).split('').map(l => l.toLowerCase()).join('');
         return addToFormulary(med);
       }
-    } else {
-      console.log('Unknown command!');
-    };
+    } else { console.log('Unknown command!') };
 
   // For the 'stock' case:
   } else if ((process.argv[2] === 'stock')) {
@@ -77,7 +74,7 @@ const tasks = () => {
         let med = process.argv[4][0].toUpperCase() + process.argv[4].slice(1);
         return addToStock(med);
       }
-    }
+    } else { console.log('Unknown command!') };
 
   // Else case: neither 'form' or 'stock':
   } else { console.log('Unknown command!') };
@@ -106,17 +103,13 @@ const listStock = () => {
   }
 };
 
-const checkUserInput = (input, text) => {
-  let output = '';
-  while (Number.isNaN(Number(input)) || (input === '')) {
-    console.log('Invalid input!');
-    let tempInput = prompt(`What's the ${text}?`);
-    if (!Number.isNaN(Number(tempInput)) && tempInput.length > 0) {
-      output = tempInput;
-      break;
-    };
+const promptForNumber = (text) => {
+  while (true) {
+    input = prompt(`What's the ${text}? `);
+    if (input == 0 || Number.isNaN(Number(input))) {
+      console.log('Invalid input!');
+    } else { return input };
   };
-  return output;
 };
 
 const addToStock = med => {
@@ -126,32 +119,43 @@ const addToStock = med => {
   } else {
     let formulary = readFormulary();
     if (formulary.has(med)) {
-      meds[med] = {}
-      // The case of 'strength':
-      let strength = prompt('What\'s the strength?');
-      let strengthText = 'strength';
-      strength = checkUserInput(strength, strengthText);
-      meds[med]['strength'] = Number(strength);
-
-      // The case of 'packSize':
-      let packSize = prompt('What\'s the pack size?');
-      let packSizeText = 'pack size';
-      packSize = checkUserInput(packSize, packSizeText);
-      meds[med]['packSize'] = Number(packSize);
-
-      // The case of 'totalPacks':
-      let totalPacks = prompt('What\'s the total packs?');
-      let totalPacksText = 'total pack(s)';
-      totalPacks = checkUserInput(totalPacks, totalPacksText);
-      meds[med]['totalPacks'] = Number(totalPacks);
-
+      meds[med] = {};
+      meds[med]['strength'] = promptForNumber('strength in mg');
+      meds[med]['packSize'] = promptForNumber('pack size');
+      meds[med]['totalPacks'] = promptForNumber('total pack(s)');
       writeStock(meds);
     } else {
       console.log(`'${med}' cannot be added since it's not in the formulary!`)
     };
   };
-  // console.log('This is to check whether the code hits this line...');
-  // return listStock();
 };
 
 tasks();
+
+// 7 × Codeine,           60×2mg
+// 22 × Codeinegfjkslgjfk, 60×2mg
+//  7 × Codeine, 60×2mg
+
+// {
+//   "A": [
+//     "5×20mg": 8,
+//     "10×10mg": 4
+//   ],
+//   "B": [
+//     "22×1mg": 5
+//     ],
+//   "C": [],
+//   "Manulya": []
+// }
+
+
+// "A": [
+//     {packSize: 5, strength: 20, count: 8},
+//     {packSize: 10, strength: 10, count: 4},
+//   ],
+
+// padding = c < 10 ? '  ' : c < 100 ? ' ' : ''
+
+// USAGE: meds form add <name>
+
+// checkUserInput => promptForNumber ✅
